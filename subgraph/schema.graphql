@@ -1,0 +1,65 @@
+type User @entity(immutable: false) {
+  id: ID! # Wallet address
+  swaps: [Swap!]! @derivedFrom(field: "sender")
+  lendingPositions: [LendingPosition!]! @derivedFrom(field: "owner")
+  proposals: [Proposal!]! @derivedFrom(field: "proposer")
+  votes: [Vote!]! @derivedFrom(field: "voter")
+}
+
+type Swap @entity(immutable: false) {
+  id: ID! # Tx hash + Log Index
+  txHash: Bytes!
+  timestamp: BigInt!
+  sender: User!
+  amount0In: BigDecimal!
+  amount1In: BigDecimal!
+  amount0Out: BigDecimal!
+  amount1Out: BigDecimal!
+  to: Bytes!
+}
+
+type LendingPosition @entity(immutable: false) {
+  id: ID! # NFT Token ID
+  owner: User!
+  collateralDeposited: BigDecimal!
+  borrowedAmount: BigDecimal!
+  healthFactor: BigDecimal!
+  isActive: Boolean!
+  transactions: [LendingTransaction!]! @derivedFrom(field: "position")
+}
+
+type LendingTransaction @entity(immutable: false) {
+  id: ID! # Tx Hash + Log Index
+  position: LendingPosition!
+  txHash: Bytes!
+  timestamp: BigInt!
+  type: String! # "DEPOSIT", "WITHDRAW", "BORROW", "REPAY", "LIQUIDATE"
+  amount: BigDecimal!
+  liquidator: Bytes # Only for LIQUIDATE
+}
+
+type Proposal @entity(immutable: false) {
+  id: ID! # Proposal ID string
+  proposalIdString: String!
+  proposer: User!
+  description: String!
+  startBlock: BigInt!
+  endBlock: BigInt!
+  status: String! # "PENDING", "ACTIVE", "CANCELED", "DEFEATED", "SUCCEEDED", "QUEUED", "EXECUTED"
+  votesFor: BigInt!
+  votesAgainst: BigInt!
+  votesAbstain: BigInt!
+  votes: [Vote!]! @derivedFrom(field: "proposal")
+  createdAtBlock: BigInt!
+  createdAtTimestamp: BigInt!
+}
+
+type Vote @entity(immutable: false) {
+  id: ID! # Proposal ID + Voter address
+  voter: User!
+  proposal: Proposal!
+  support: Int! # 0 = Against, 1 = For, 2 = Abstain
+  weight: BigInt!
+  reason: String
+  timestamp: BigInt!
+}

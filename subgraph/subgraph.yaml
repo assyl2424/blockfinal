@@ -1,0 +1,85 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: AMM
+    network: arbitrum-sepolia
+    source:
+      address: "0xB7f8bc63BbcaD18155201308C8f3540b07f84F5e" 
+      abi: AMM
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Swap
+        - User
+      abis:
+        - name: AMM
+          file: ../out/AMM.sol/AMM.json
+      eventHandlers:
+        - event: Swap(indexed address,indexed address,uint256,uint256,indexed address)
+          handler: handleSwap
+      file: ./src/mappings.ts
+
+  - kind: ethereum
+    name: LendingPool
+    network: arbitrum-sepolia
+    source:
+      address: "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82" 
+      abi: LendingPool
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - LendingPosition
+        - LendingTransaction
+        - User
+      abis:
+        - name: LendingPool
+          file: ../out/LendingPool.sol/LendingPool.json
+      eventHandlers:
+        - event: CollateralDeposited(indexed address,uint256,uint256)
+          handler: handleCollateralDeposited
+        - event: CollateralWithdrawn(indexed address,uint256,uint256)
+          handler: handleCollateralWithdrawn
+        - event: Borrowed(indexed address,uint256,uint256)
+          handler: handleBorrowed
+        - event: Repaid(indexed address,uint256,uint256)
+          handler: handleRepaid
+        - event: Liquidated(indexed uint256,indexed address,uint256,uint256)
+          handler: handleLiquidated
+      file: ./src/mappings.ts
+
+  - kind: ethereum
+    name: ProtocolGovernor
+    network: arbitrum-sepolia
+    source:
+      address: "0xa513E6E4b8f2a923D98304ec87F64353C4D5C853" 
+      abi: ProtocolGovernor
+      startBlock: 1
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Proposal
+        - Vote
+        - User
+      abis:
+        - name: ProtocolGovernor
+          file: ../out/ProtocolGovernor.sol/ProtocolGovernor.json
+      eventHandlers:
+        - event: ProposalCreated(uint256,address,address[],uint256[],string[],bytes[],uint256,uint256,string)
+          handler: handleProposalCreated
+        - event: VoteCast(indexed address,uint256,uint8,uint256,string)
+          handler: handleVoteCast
+        - event: ProposalExecuted(uint256)
+          handler: handleProposalExecuted
+        - event: ProposalCanceled(uint256)
+          handler: handleProposalCanceled
+      file: ./src/mappings.ts

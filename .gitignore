@@ -1,0 +1,27 @@
+# Compiler files
+cache/
+out/
+
+# Commonly ignored directories
+.DS_Store
+.logs/
+.ignore/
+node_modules/
+frontend/node_modules/
+subgraph/node_modules/
+frontend/dist/
+subgraph/build/
+subgraph/generated/
+
+# Ignores development broadcast logs
+!/broadcast
+/broadcast/*/31337/
+/broadcast/**/dry-run/
+
+# Docs (Mandatory deliverables)
+# docs/
+
+# Dotenv file
+.env
+.env.*
+!.env.example
